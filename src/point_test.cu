@@ -17,24 +17,7 @@
 
 
 //#include "include/templated_quad_table.cuh"
-#include <poggers/metadata.cuh>
-#include <poggers/hash_schemes/murmurhash.cuh>
-#include <poggers/probing_schemes/linear_probing.cuh>
-#include <poggers/probing_schemes/double_hashing.cuh>
-#include <poggers/insert_schemes/power_of_n_shortcut.cuh>
-#include <poggers/insert_schemes/single_slot_insert.cuh>
-#include <poggers/insert_schemes/bucket_insert.cuh>
-#include <poggers/insert_schemes/power_of_n.cuh>
-#include <poggers/representations/key_val_pair.cuh>
-#include <poggers/representations/shortened_key_val_pair.cuh>
 
-
-#include <poggers/representations/dynamic_container.cuh>
-#include <poggers/representations/key_only.cuh>
-
-#include <poggers/sizing/default_sizing.cuh>
-#include <poggers/sizing/variadic_sizing.cuh>
-#include <poggers/tables/base_table.cuh>
 
 #include <stdio.h>
 #include <iostream>
@@ -64,17 +47,19 @@
 #include <bitset>
 
 
-#include <warpcore/bloom_filter.cuh>
 
 
-using tiny_static_table_4 = poggers::tables::static_table<uint64_t, uint16_t, poggers::representations::dynamic_container<poggers::representations::key_container,uint16_t>::representation, 4, 4, poggers::insert_schemes::bucket_insert, 20, poggers::probing_schemes::doubleHasher, poggers::hashers::murmurHasher>;
-using tcqf = poggers::tables::static_table<uint64_t,uint16_t, poggers::representations::dynamic_container<poggers::representations::key_container,uint16_t>::representation, 4, 16, poggers::insert_schemes::power_of_n_insert_shortcut_scheme, 2, poggers::probing_schemes::doubleHasher, poggers::hashers::murmurHasher, true, tiny_static_table_4>;
+// #include "blocked_wrapper.cuh"
+// #include "bloom_wrapper.cuh"
+// #include "gqf_wrapper.cuh"
+#include "tcf_wrapper.cuh"
+
+// using tiny_static_table_4 = poggers::tables::static_table<uint64_t, uint16_t, poggers::representations::dynamic_container<poggers::representations::key_container,uint16_t>::representation, 4, 4, poggers::insert_schemes::bucket_insert, 20, poggers::probing_schemes::doubleHasher, poggers::hashers::murmurHasher>;
+// using tcqf = poggers::tables::static_table<uint64_t,uint16_t, poggers::representations::dynamic_container<poggers::representations::key_container,uint16_t>::representation, 4, 16, poggers::insert_schemes::power_of_n_insert_shortcut_scheme, 2, poggers::probing_schemes::doubleHasher, poggers::hashers::murmurHasher, true, tiny_static_table_4>;
 
 
-using tcqf_no_back = poggers::tables::static_table<uint64_t,uint16_t, poggers::representations::dynamic_container<poggers::representations::key_container,uint16_t>::representation, 4, 16, poggers::insert_schemes::power_of_n_insert_shortcut_scheme, 2, poggers::probing_schemes::doubleHasher, poggers::hashers::murmurHasher>;
+// using tcqf_no_back = poggers::tables::static_table<uint64_t,uint16_t, poggers::representations::dynamic_container<poggers::representations::key_container,uint16_t>::representation, 4, 16, poggers::insert_schemes::power_of_n_insert_shortcut_scheme, 2, poggers::probing_schemes::doubleHasher, poggers::hashers::murmurHasher>;
 
-
-using warpcore_bloom = warpcore::BloomFilter<uint64_t>;
 
 
 #define gpuErrorCheck(ans) { gpuAssert((ans), __FILE__, __LINE__); }
@@ -1086,6 +1071,22 @@ int main(int argc, char** argv) {
 
 
    // warpcore_bloom my_filter((1ULL << 20), 7);
+
+   // QF * qfilter;
+
+   // qf_malloc_device(&qfilter, 20, true);
+
+   // cudaDeviceSynchronize();
+
+   // qf_destroy_device(qfilter);
+
+   tcf_wrapper test;
+
+   test.init(20);
+
+   cudaDeviceSynchronize();
+
+   test.close();
 
 
    test_bloom_speed("bloom_results/test", 20, 20, true);

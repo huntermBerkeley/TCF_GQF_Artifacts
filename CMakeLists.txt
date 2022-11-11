@@ -49,6 +49,13 @@ CPMAddPackage(
 
 )
 
+
+CPMAddPackage(
+  NAME gqf
+  GITHUB_REPOSITORY huntermBerkeley/gqf-artifacts
+  GIT_TAG origin/main
+)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -57,19 +64,24 @@ set(CMAKE_CXX_COMPILER $ENV{CXX})
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") 
 
+
+#create library for GQF
+
+
+
 #needed for warpcore
 set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} --expt-extended-lambda --expt-relaxed-constexpr")
 
 
-ConfigureExecutable(test "${CMAKE_CURRENT_SOURCE_DIR}/src/test.cu" "${CMAKE_BINARY_DIR}")
+ConfigureExecutable(point_test "${CMAKE_CURRENT_SOURCE_DIR}/src/point_test.cu" "${CMAKE_BINARY_DIR}")
 
-configureExecutable(copy_and_sort "${CMAKE_CURRENT_SOURCE_DIR}/src/copy_and_sort.cu" "${CMAKE_BINARY_DIR}")
+target_include_directories(point_test PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 
-target_link_libraries(test PRIVATE poggers)
-target_link_libraries(test PRIVATE warpcore)
+target_link_libraries(point_test PRIVATE poggers)
+target_link_libraries(point_test PRIVATE warpcore)
 
-target_link_libraries(copy_and_sort PRIVATE poggers)
-target_link_libraries(copy_and_sort PRIVATE warpcore)
+target_link_libraries(point_test PRIVATE gqf)
+
 
 
